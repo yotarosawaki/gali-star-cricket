@@ -1,0 +1,12 @@
+{
+  "name": "Gali Star Cricket",
+  "short_name": "Gali Star",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#062a17",
+  "theme_color": "#01411c",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
