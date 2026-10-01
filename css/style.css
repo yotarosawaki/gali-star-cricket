@@ -213,3 +213,28 @@ small { font-size: 12px; }
 .key { height: 60px; border-radius: 14px; background: var(--panel2); font-size: 26px; font-weight: 900; box-shadow: 0 4px 0 #0a3a1f; }
 .key.go { background: var(--acc); color: #111; }
 .rowpad { padding: 12px; }
+
+/* 育成: トレーニングのカットイン */
+.trainscr { background: #031a0d; }
+.tsta { flex: 0 0 46%; font-size: 14px; }
+.tsta small { min-width: 2.2em; text-align: end; font-weight: 800; }
+.tstage { position: relative; height: 44vh; min-height: 230px; overflow: hidden; }
+.tstage.cutin { animation: cutin .35s cubic-bezier(.2, 1.4, .4, 1); clip-path: polygon(0 4%, 100% 0, 100% 96%, 0 100%); }
+@keyframes cutin { from { transform: translateX(-110%) skewX(-12deg); } }
+.tcv { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.tres { padding: 10px 14px; display: flex; flex-direction: column; gap: 8px; align-items: stretch; }
+.stamp { align-self: center; font-size: 40px; font-weight: 900; padding: 2px 18px; border-radius: 14px; animation: stamp .35s cubic-bezier(.2, 1.6, .4, 1); }
+.stamp.ok { color: #3ddc84; }
+.stamp.great { color: var(--acc); text-shadow: 0 0 14px rgba(245, 197, 66, .8); }
+.stamp.ng { color: var(--red); }
+@keyframes stamp { from { transform: scale(2.6) rotate(-8deg); opacity: 0; } }
+.rowbox { display: flex; flex-direction: column; gap: 8px; }
+.crow.on { opacity: 1; }
+.crow { opacity: .55; font-size: 16px; background: var(--panel); border-radius: 12px; padding: 8px 10px; animation: pop .2s ease-out; }
+.crow .bar { height: 12px; }
+.crow .sval { font-size: 20px; width: 2.2em; display: inline-block; }
+.sval.pop { animation: pico .11s ease-out; color: var(--acc); }
+@keyframes pico { 50% { transform: scale(1.45); } }
+.plusn { min-width: 2.6em; font-weight: 900; color: var(--green); text-align: end; }
+.eff.bad { color: var(--red); }
+.lvup { align-self: center; font-size: 24px; font-weight: 900; color: var(--acc); animation: stamp .3s ease-out; }

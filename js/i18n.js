@@ -25,7 +25,7 @@ const I18N = {
       name_note: '※ 本名や個人情報は入れないでね',
       pick_role: 'タイプをえらぶ', pick_coach: 'コーチをえらぶ',
       tr_bat: '打撃', tr_bowl: '投球', tr_run: '走りこみ', tr_field: '守備', tr_rest: '休む', tr_play: 'チャイ休けい',
-      train_fail: '練習失敗…', train_great: '大成功！', use_points: '能力アップ',
+      train_fail: '練習失敗…', train_great: '大成功！', train_ok: '成功！', use_points: '能力アップ',
       mk_practice: '練習試合', mk_d1: '地区大会 準決勝', mk_d2: '地区大会 決勝', mk_n1: '全国大会 準決勝', mk_n2: '全国大会 決勝',
       chance: 'チャンス！ 打て！', pinch: 'ピンチ！ おさえろ！',
       hint_bat: '輪が重なったら 打ちたい方向へスワイプ', hint_bowl: '①場所をタップ ②球種 ③タイミングよくタップ',

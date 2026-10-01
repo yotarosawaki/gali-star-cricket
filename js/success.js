@@ -133,24 +133,26 @@ const Success = {
   },
 
   async doTrain(kind) {
-    const r = this.run, risk = this.risk();
+    const r = this.run, risk = this.risk(), before = { ...r.p }, staFrom = r.sta, coaches = r.at[kind] || [];
     r.sta = Math.max(0, r.sta - TRAIN[kind].cost);
+    const g0 = this.gains(kind), keys = Object.keys(g0).filter(k => g0[k] >= 0.5);
+    const anim = { kind, p: r.p, color: S.d.team.color, before, staFrom, coaches, keys };
     if (Math.random() * 100 < risk) {
       r.mot = Math.max(0, r.mot - 1); r.sta = Math.max(0, r.sta - 5);
-      SFX.bad();
-      await UI.alert([h('div', { class: 'bigic' }, '🤕'), h('h2', null, t('train_fail')), h('div', { class: 'effs big' }, h('span', { class: 'eff' }, '😟↓'))]);
+      Object.assign(anim, { fail: true, got: {} });
     } else {
       const g = this.gains(kind), great = Math.random() < 0.08, eff = {};
       for (const k in g) { const v = g[k] * (great ? 2 : 1); eff[k] = Math.max(v >= 0.7 ? 1 : 0, Math.floor(v + Math.random())); }
+      const maxBefore = r.maxSta;
       if (kind === 'run') r.maxSta = Math.min(130, r.maxSta + 3);
       const got = this.apply(eff);
       r.cnt[kind] = (r.cnt[kind] || 0) + 1;
       const lvUp = r.cnt[kind] % 4 === 0 && (r.lv[kind] || 0) < 4;
       if (lvUp) r.lv[kind] = (r.lv[kind] || 0) + 1;
-      SFX.good();
-      await UI.alert([h('div', { class: 'bigic' }, great ? '✨' : TRAIN[kind].ic), great ? h('h2', { class: 'gold' }, t('train_great')) : null,
-        h('div', { class: 'effs big' }, UI.effText(got)), lvUp ? h('p', { class: 'gold' }, '⬆ Lv', r.lv[kind] + 1) : null]);
+      Object.assign(anim, { great, got, lvUp, lv: (r.lv[kind] || 0) + 1, maxStaUp: r.maxSta - maxBefore });
     }
+    S.save();
+    await TrainAnim.play(Object.assign(anim, { staTo: r.sta, maxSta: r.maxSta }));
     this.advance();
   },
   async doRest() {
@@ -175,7 +177,7 @@ const Success = {
     this.placeCoaches();
     S.save();
     if (SCHED[r.turn]) { await this.match(this.kindAt(r.turn)); if (r.turn >= TURNS) return this.finish(); }
-    else if (Math.random() < 0.3) await this.event();
+    else if (Math.random() < 0.3) { this.turnScreen(); await this.event(); }
     S.save();
     this.turnScreen();
   },

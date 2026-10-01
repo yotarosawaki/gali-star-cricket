@@ -23,7 +23,7 @@ class ActionView {
     let last = performance.now();
     const loop = now => {
       if (!this.alive) return;
-      const dt = Math.min(0.05, (now - last) / 1000); last = now; this.time += dt;
+      const dt = clamp((now - last) / 1000, 0, 0.05); last = now; this.time += dt;
       if (this.tick) this.tick(dt);
       requestAnimationFrame(loop);
     };
