@@ -61,7 +61,7 @@ const UI = {
   },
   topbar(title, onBack, right) {
     return h('div', { class: 'topbar' },
-      onBack ? h('button', { class: 'iconbtn', onclick: () => { SFX.click(); onBack(); }, 'aria-label': t('back') }, '◀') : null,
+      onBack ? h('button', { class: 'iconbtn backbtn', onclick: () => { SFX.click(); onBack(); }, 'aria-label': t('back') }, '◀') : null,
       h('div', { class: 'title' }, title),
       right || h('div', { class: 'coins' }, '🪙 ', S.d.coins));
   },
