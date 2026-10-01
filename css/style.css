@@ -238,3 +238,29 @@ small { font-size: 12px; }
 .plusn { min-width: 2.6em; font-weight: 900; color: var(--green); text-align: end; }
 .eff.bad { color: var(--red); }
 .lvup { align-self: center; font-size: 24px; font-weight: 900; color: var(--acc); animation: stamp .3s ease-out; }
+
+/* 育成: 今週の行動えらび */
+.turnscr { position: relative; }
+.schips { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3px 6px; }
+.schip { display: flex; align-items: center; gap: 2px; font-size: 12px; }
+.schip b { font-size: 13px; min-width: 1.6em; text-align: end; }
+.ask { display: flex; align-items: center; gap: 10px; }
+.askweek { flex: none; background: var(--acc); color: #2b1d00; font-weight: 900; border-radius: 12px; padding: 8px 10px; font-size: 17px; text-align: center; line-height: 1.1; }
+.askweek small { display: block; font-size: 11px; }
+.bubble { position: relative; flex: 1; background: #fff; color: #10301c; border-radius: 14px; padding: 8px 12px; display: flex; flex-direction: column; gap: 2px; }
+.bubble::before { content: ''; position: absolute; inset-inline-start: -8px; top: 50%; margin-top: -8px; border: 8px solid transparent; border-inline-end-color: #fff; border-inline-start: 0; }
+.bubble b { font-size: 18px; }
+.bubble small { font-weight: 700; color: #2d5c3d; }
+.bubble small.gold { color: #b07800; }
+.tbtn.sel { border-color: var(--acc); box-shadow: 0 0 0 3px var(--acc), 0 4px 0 rgba(0, 0, 0, .3); transform: translateY(-2px); filter: brightness(1.15); }
+.tbtn.recm { animation: recpulse 1.1s ease-in-out infinite; }
+@keyframes recpulse { 50% { box-shadow: 0 0 0 4px rgba(245, 197, 66, .85), 0 4px 0 rgba(0, 0, 0, .3); } }
+.recb { position: absolute; top: -9px; inset-inline-start: 8px; background: var(--acc); color: #2b1d00; font-size: 11px; font-weight: 900; border-radius: 99px; padding: 2px 8px; z-index: 1; }
+.decide { position: sticky; bottom: 0; margin-top: auto; padding: 10px 12px 14px; background: linear-gradient(rgba(6, 42, 23, 0), rgba(6, 42, 23, .95) 30%); z-index: 6; }
+.decide .btn:disabled { opacity: .55; background: var(--panel2); box-shadow: 0 4px 0 #0a3a1f; }
+.decide .btn.ready { animation: pop .2s ease-out; }
+.weekcard { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; background: rgba(3, 26, 13, .85); z-index: 15; pointer-events: none; animation: weekcard 1.1s ease-in forwards; }
+.weekcard span { font-size: 56px; }
+.weekcard b { font-size: 46px; color: var(--acc); }
+.weekcard small { font-size: 18px; color: var(--mut); }
+@keyframes weekcard { 0% { opacity: 0; transform: scale(1.3); } 20% { opacity: 1; transform: scale(1); } 70% { opacity: 1; } 100% { opacity: 0; visibility: hidden; } }

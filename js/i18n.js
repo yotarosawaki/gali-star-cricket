@@ -25,6 +25,8 @@ const I18N = {
       name_note: '※ 本名や個人情報は入れないでね',
       pick_role: 'タイプをえらぶ', pick_coach: 'コーチをえらぶ',
       tr_bat: '打撃', tr_bowl: '投球', tr_run: '走りこみ', tr_field: '守備', tr_rest: '休む', tr_play: 'チャイ休けい',
+      ask_week: '今週は何をする？', week_n: '第{n}週', rec: 'おすすめ', pick_one: 'えらんでね', decide: 'これにする！',
+      hint_rest: '❤が少ない！ 休まないとケガするかも', hint_mot: 'やる気が低い… チャイで気分転換しよう', hint_coach: 'コーチが来てる！ {x}がおすすめ', hint_role: '得意をのばそう！ {x}がおすすめ', hint_match: '試合まであと{n}週！',
       train_fail: '練習失敗…', train_great: '大成功！', train_ok: '成功！', use_points: '能力アップ',
       mk_practice: '練習試合', mk_d1: '地区大会 準決勝', mk_d2: '地区大会 決勝', mk_n1: '全国大会 準決勝', mk_n2: '全国大会 決勝',
       chance: 'チャンス！ 打て！', pinch: 'ピンチ！ おさえろ！',

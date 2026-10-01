@@ -100,18 +100,47 @@ const Success = {
   nextMatch() { for (let i = this.run.turn + 1; i <= TURNS; i++) if (SCHED[i]) return { in: i - this.run.turn, kind: this.kindAt(i) }; return null; },
   kindAt(turn) { const k = SCHED[turn]; return this.run.out && k !== 'practice' ? 'practice' : k; },
 
-  turnScreen() {
+  // 今週のおすすめ行動とヒント
+  recommend() {
+    const r = this.run, p = r.p;
+    if (r.sta < 45) return { act: 'rest', hint: 'hint_rest' };
+    if (r.mot <= 1) return { act: 'play', hint: 'hint_mot' };
+    const weak = p.role === 'all' ? (P.batR(p) <= P.bowlR(p) ? 'bat' : 'bowl') : p.role;
+    let best = null, bestScore = -1;
+    for (const k of Object.keys(TRAIN)) {
+      const sc = (r.at[k] || []).length * 2 + (k === weak ? 1.5 : 0) + (r.lv[k] || 0) * 0.2;
+      if (sc > bestScore) { best = k; bestScore = sc; }
+    }
+    return { act: best, hint: (r.at[best] || []).length ? 'hint_coach' : 'hint_role' };
+  },
+
+  turnScreen(fresh) {
     const r = this.run, p = r.p, month = Math.floor(r.turn / 3) + 1, week = r.turn % 3, nm = this.nextMatch(), risk = this.risk();
+    if (this.selTurn !== r.turn) { this.sel = null; this.selTurn = r.turn; fresh = true; }
+    const rec = this.recommend();
+    const acts = {
+      bat: () => this.doTrain('bat'), bowl: () => this.doTrain('bowl'), run: () => this.doTrain('run'), field: () => this.doTrain('field'),
+      rest: () => this.doRest(), play: () => this.doPlay(),
+    };
+    const choose = k => {
+      if (this.sel === k) return go();
+      SFX.click(); this.sel = k; this.turnScreen();
+    };
+    const go = () => { const k = this.sel; if (!k) return; this.sel = null; SFX.good(); acts[k](); };
+    const badge = k => (k === rec.act ? h('span', { class: 'recb' }, '👍 ', t('rec')) : null);
+    const cls = (k, extra) => 'tbtn' + (extra ? ' ' + extra : '') + (this.sel === k ? ' sel' : '') + (k === rec.act && !this.sel ? ' recm' : '');
     const trainBtn = kind => {
       const g = this.gains(kind), tr = TRAIN[kind], lv = r.lv[kind] || 0;
-      return h('button', { class: 'tbtn', onclick: () => this.doTrain(kind) },
+      return h('button', { class: cls(kind), onclick: () => choose(kind) }, badge(kind),
         h('div', { class: 'tcoach' }, (r.at[kind] || []).map(id => h('span', null, COACHES[id].ic))),
         h('span', { class: 'bigic sm' }, tr.ic), h('b', null, t('tr_' + kind)),
         h('div', { class: 'lv' }, [0, 1, 2, 3, 4].map(i => h('i', { class: i <= lv ? 'on' : '' }))),
         h('div', { class: 'effs' }, Object.keys(g).filter(k => g[k] >= 1).map(k => h('span', { class: 'eff' }, STAT_IC[k], '+', Math.round(g[k])))),
         h('div', { class: 'tcost' }, '❤-', tr.cost, risk ? h('span', { class: 'risk' }, ' ⚠', risk, '%') : null));
     };
-    UI.show(h('div', { class: 'screen' },
+    const hintText = t(rec.hint, { x: t('tr_' + rec.act) });
+    const selName = this.sel ? [TRAIN[this.sel] ? TRAIN[this.sel].ic : this.sel === 'rest' ? '💤' : '☕', ' ', t('tr_' + this.sel)] : null;
+    UI.show(h('div', { class: 'screen turnscr' },
       h('div', { class: 'topbar' },
         h('button', { class: 'iconbtn', onclick: () => { SFX.click(); S.save(); Main.home(); } }, '🏠'),
         h('div', { class: 'title' }, '📅 ', month, '/12 ', h('span', { class: 'weeks' }, [0, 1, 2].map(i => h('i', { class: i < week ? 'done' : i === week ? 'now' : '' })))),
@@ -120,16 +149,28 @@ const Success = {
         Object.keys(SCHED).map(tn => h('span', { class: 'pm' + (r.turn >= tn ? ' done' : ''), style: 'inset-inline-start:' + (tn / TURNS * 100) + '%' }, MATCH_KIND[this.kindAt(+tn)].ic))),
       h('div', { class: 'pad' },
         h('div', { class: 'card pcard' },
-          UI.avatar(p, S.d.team.color, 64),
+          UI.avatar(p, S.d.team.color, 56),
           h('div', { class: 'grow' },
             h('div', { class: 'row between' }, h('b', null, ROLE_IC[p.role], ' ', p.name), UI.gradeBadge(P.gradeOf(p))),
-            h('div', { class: 'row' }, h('span', null, '❤'), h('span', { class: 'bar sta' }, h('i', { style: 'width:' + (r.sta / r.maxSta * 100) + '%;background:' + (r.sta < 40 ? '#e5484d' : r.sta < 60 ? '#f5c542' : '#3ddc84') })), h('small', null, r.sta, '/', r.maxSta), h('span', { class: 'mot' }, MOT_IC[r.mot])))),
+            h('div', { class: 'row' }, h('span', null, '❤'), h('span', { class: 'bar sta' }, h('i', { style: 'width:' + (r.sta / r.maxSta * 100) + '%;background:' + (r.sta < 40 ? '#e5484d' : r.sta < 60 ? '#f5c542' : '#3ddc84') })), h('small', null, r.sta, '/', r.maxSta), h('span', { class: 'mot' }, MOT_IC[r.mot])),
+            h('div', { class: 'schips' }, STATS.map(s => h('span', { class: 'schip' }, s.ic, h('b', null, p[s.k]), UI.gradeBadge(P.grade(p[s.k]), true)))))),
         r.pts > 0 ? h('button', { class: 'btn wide gold', onclick: () => this.allocScreen() }, '⭐ ', r.pts, ' ', t('use_points')) : null,
-        UI.statBars(p),
+        // 今週の問いかけ
+        h('div', { class: 'ask' },
+          h('div', { class: 'askweek' }, t('week_n', { n: r.turn + 1 }), h('small', null, ' / ', TURNS)),
+          h('div', { class: 'bubble' },
+            h('b', null, t('ask_week')),
+            h('small', null, rec.hint === 'hint_rest' ? '' : rec.hint === 'hint_mot' ? '😟 ' : '👍 ', hintText),
+            nm && nm.in <= 2 ? h('small', { class: 'gold' }, MATCH_KIND[nm.kind].ic, ' ', t('hint_match', { n: nm.in })) : null)),
         h('div', { class: 'tgrid' },
           ['bat', 'bowl', 'run', 'field'].map(trainBtn),
-          h('button', { class: 'tbtn rest', onclick: () => this.doRest() }, h('span', { class: 'bigic sm' }, '💤'), h('b', null, t('tr_rest')), h('div', { class: 'effs' }, h('span', { class: 'eff' }, '❤+45'))),
-          h('button', { class: 'tbtn rest', onclick: () => this.doPlay() }, h('span', { class: 'bigic sm' }, '☕'), h('b', null, t('tr_play')), h('div', { class: 'effs' }, h('span', { class: 'eff' }, '😄↑'), h('span', { class: 'eff' }, '❤+15')))))));
+          h('button', { class: cls('rest', 'rest'), onclick: () => choose('rest') }, badge('rest'), h('span', { class: 'bigic sm' }, '💤'), h('b', null, t('tr_rest')), h('div', { class: 'effs' }, h('span', { class: 'eff' }, '❤+45'))),
+          h('button', { class: cls('play', 'rest'), onclick: () => choose('play') }, badge('play'), h('span', { class: 'bigic sm' }, '☕'), h('b', null, t('tr_play')), h('div', { class: 'effs' }, h('span', { class: 'eff' }, '😄↑'), h('span', { class: 'eff' }, '❤+15'))))),
+      // 決定ボタン（えらぶまで押せない）
+      h('div', { class: 'decide' },
+        h('button', { class: 'btn wide big' + (this.sel ? ' ready' : ''), disabled: !this.sel, onclick: go },
+          this.sel ? ['▶ ', selName, ' ', t('decide')] : ['👆 ', t('pick_one')])),
+      fresh ? h('div', { class: 'weekcard' }, h('span', null, '📅'), h('b', null, t('week_n', { n: r.turn + 1 })), h('small', null, month, '/12')) : null));
   },
 
   async doTrain(kind) {
